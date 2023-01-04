@@ -1,0 +1,35 @@
+## Filebeat configuration
+## https://github.com/elastic/beats/blob/master/deploy/docker/filebeat.docker.yml
+#
+
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+      containers:
+        path: "/var/lib/docker/containers"
+
+processors:
+  - add_cloud_metadata: ~
+
+output.elasticsearch:
+  hosts: ['https://elasticsearch:9200']
+  username: elastic
+  password: ${ELASTIC_PASSWORD}
+
+## HTTP endpoint for health checking
+## https://www.elastic.co/guide/en/beats/filebeat/current/http-endpoint.html
+#
+
+setup.kibana:
+  host: "host.docker.internal:5651"
+  username: elastic
+  password: ${ELASTIC_PASSWORD}
+
+http.enabled: true
+http.host: 0.0.0.0
